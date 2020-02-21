@@ -34,7 +34,7 @@ void loop() {
     http.begin("http://15.206.103.78/incoming");      //Specify request destination
     http.addHeader("Content-Type", "text/plain");  //Specify content-type header
 
-    String str= String(BPM); 
+    String str= "1234-"+String(BPM); 
     int httpCode = http.POST(str);   //Send the request
     String payload = http.getString();                  //Get the response payload
 
