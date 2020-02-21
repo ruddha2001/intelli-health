@@ -61,7 +61,7 @@ app.post("/incoming", function(req, res) {
 });
 
 app.get("/", function(req, res) {
-  res.send("Welcome to Intelli Sense");
+  res.send("Welcome to IntelliHealth");
 });
 
 //Login API
