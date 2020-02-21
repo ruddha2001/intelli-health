@@ -65,7 +65,7 @@ app.get("/", function(req, res) {
 });
 
 //Login API
-app.post("/login", async function(req, res) {
+app.post("/login", auth, async function(req, res) {
   let email = req.body.email;
   let password = req.body.password;
 
@@ -83,13 +83,52 @@ app.post("/login", async function(req, res) {
         process.env.SECRET,
         {
           expiresIn: "1h",
-          issuer: "patientcare"
+          issuer: "intellihealth"
         }
       );
       req.session.token = token;
       res.redirect("/");
     } else {
       return res.sendFile(path.join(__dirname + "/site/login.html"));
+    }
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+});
+
+//Register API
+app.post("/register", async function(req, res) {
+  let name = req.body.name;
+  let email = req.body.email;
+  let password = req.body.password;
+
+  try {
+    let hash = await bcrypt.hash(password, 14);
+    let collection = client.db("intelliHealth").collection("users");
+    try {
+      let response = await collection.find({ email: email }).toArray();
+      if (response.length != 0) {
+        console.log("Existing Email");
+        return res
+          .status(299)
+          .sendFile(path.join(__dirname + "/site/register.html"));
+      } else {
+        try {
+          let result = await collection.insertOne({
+            name: name,
+            email: email,
+            password: hash
+          });
+          return res.sendStatus(200);
+        } catch (err) {
+          console.log(err);
+          return res.sendStatus(500);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      return res.sendStatus(401);
     }
   } catch (err) {
     console.log(err);
