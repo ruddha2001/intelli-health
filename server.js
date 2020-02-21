@@ -60,12 +60,12 @@ app.post("/incoming", function(req, res) {
   res.sendStatus(200);
 });
 
-app.get("/", function(req, res) {
+app.get("/", auth, function(req, res) {
   res.send("Welcome to IntelliHealth");
 });
 
 //Login API
-app.post("/login", auth, async function(req, res) {
+app.post("/login", async function(req, res) {
   let email = req.body.email;
   let password = req.body.password;
 
