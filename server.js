@@ -60,6 +60,10 @@ app.post("/incoming", function(req, res) {
   res.sendStatus(200);
 });
 
+app.get("/", function(req, res) {
+  res.send("Welcome to Intelli Sense");
+});
+
 //Login API
 app.post("/login", async function(req, res) {
   let email = req.body.email;
