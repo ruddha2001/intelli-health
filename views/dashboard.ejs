@@ -36,7 +36,7 @@
               count = count || 1;
 
               for (var j = 0; j < count; j++) {
-                let url = "https://in.ruddha.xyz/datapoint?nodeid=" + document.getElementById('chartContainer').dataset.test;
+                let url = "https://ih.ruddha.xyz/datapoint?nodeid=" + document.getElementById('chartContainer').dataset.test;
                 let response = await fetch(url);
                 let json = await response.json();
                 yVal = parseInt(json["value"]);
