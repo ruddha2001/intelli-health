@@ -154,7 +154,6 @@ let notificationFunc = function(mobile, email) {
       console.log("Message sent successfully");
     }
   });
-
   url = "https://ih.ruddha.xyz/mail?to=" + email;
   axios.get(url).then(function(ans) {
     if (ans == 200) {
