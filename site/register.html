@@ -11,8 +11,8 @@
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
       integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
@@ -35,12 +35,7 @@
       <div class="container-fuid" style="display: block;">
         <div class="row">
           <div class="col-lg-6" style="margin-top: 60px;">
-            <img
-              src="2.gif"
-              class="d-block mx-auto"
-              width="100%"
-              alt="Logo"
-            />
+            <img src="2.gif" class="d-block mx-auto" width="100%" alt="Logo" />
           </div>
           <div class="col-lg-6" style="margin-top: 40px;">
             <div class="card col-lg-8 d-block mx-auto">
@@ -49,7 +44,7 @@
               <br />
               <div class="card-body px-lg-5 pt-0">
                 <!-- Form -->
-                <form action="http://localhost:6600/register" method="POST">
+                <form action="/register" method="POST">
                   <div class="form-group">
                     <label
                       for="exampleInputEmail1"
@@ -116,6 +111,29 @@
                       style="text-align: center;"
                       class="d-block mx-auto"
                       >Enter your password</small
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label
+                      for="exampleInputEmail1"
+                      style="text-align: center;"
+                      class="d-block mx-auto"
+                      >Node ID</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="email"
+                      aria-describedby="emailHelp"
+                      placeholder="Enter Node ID"
+                      name="nodeid"
+                    />
+                    <small
+                      id="emailHelp"
+                      class="form-text text-muted"
+                      style="text-align: center;"
+                      class="d-block mx-auto"
+                      >Enter the Node ID</small
                     >
                   </div>
                   <button

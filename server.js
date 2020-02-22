@@ -60,6 +60,11 @@ app.use(express.static(__dirname + "/site"));
 let auth = async function(req, res, next) {
   try {
     let status = await jwt.verify(req.session.token, process.env.SECRET);
+    if (status) {
+      let decoded = jwt.decode(req.session.token);
+      res.locals.nodeid = decoded.nodeid;
+      res.locals.username = decoded.name;
+    }
     return next();
   } catch (err) {
     return res.sendFile(path.join(__dirname + "/site/index.html"));
@@ -114,6 +119,11 @@ app.post("/incoming", function(req, res) {
   }
 });
 
+//Dashboard Data API
+app.get("/datapoint", auth, function(req, res) {
+  res.send(req.query.nodeid);
+});
+
 //Login API
 app.post("/login", async function(req, res) {
   let email = req.body.email;
@@ -128,7 +138,8 @@ app.post("/login", async function(req, res) {
       let token = jwt.sign(
         {
           email: email,
-          name: result["name"]
+          name: result["name"],
+          nodeid: result["nodeid"]
         },
         process.env.SECRET,
         {
@@ -152,6 +163,7 @@ app.post("/register", async function(req, res) {
   let name = req.body.name;
   let email = req.body.email;
   let password = req.body.password;
+  let nodeid = req.body.nodeid;
 
   try {
     let hash = await bcrypt.hash(password, 14);
@@ -166,7 +178,8 @@ app.post("/register", async function(req, res) {
           let result = await collection.insertOne({
             name: name,
             email: email,
-            password: hash
+            password: hash,
+            nodeid: nodeid
           });
           return res.sendStatus(200);
         } catch (err) {
@@ -191,7 +204,10 @@ app.get("/", function(req, res) {
 
 //Dashboard
 app.get("/dashboard", auth, function(req, res) {
-  res.sendFile(path.join(__dirname + "/site/dashboard.html"));
+  res.render("dashboard.ejs", {
+    nodeid: res.locals.nodeid,
+    user: res.locals.username
+  });
 });
 
 app.listen(6600, function(err) {
