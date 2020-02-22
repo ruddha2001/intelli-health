@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const rateLimit = require("express-rate-limit");
 const nodemailer = require("nodemailer");
+const axios = require("axios").default;
 
 const app = express();
 
@@ -72,14 +73,16 @@ let auth = async function(req, res, next) {
 };
 
 //Mailing API
-app.post("/mail", async function(req, res) {
+app.get("/mail", async function(req, res) {
   try {
     let info = await transporter.sendMail({
       from: "IntelliHealth <me@aniruddha.net>", // sender address
-      to: req.body.to, // list of receivers
-      subject: req.body.sub, // Subject line
-      text: req.body.text, // plain text body
-      html: req.body.html // html body
+      to: req.query.to, // list of receivers
+      subject: "IntelliHealth", // Subject line
+      text:
+        "There is some complications with the vitals of your family member. Please log into https://ih.ruddha.xyz to check on the reports. If in any grave danger, call 108 immediately for an ambulance.", // plain text body
+      html:
+        "There is some complications with the vitals of your family member. Please log into <a href='https://ih.ruddha.xyz'>https://ih.ruddha.xyz</a> to check on the reports. If in any grave danger, call <b>108</b> immediately for an ambulance." // html body
     });
     res.sendStatus(200);
   } catch (err) {
@@ -143,6 +146,22 @@ app.post("/incoming", function(req, res) {
   }
 });
 
+//Notification Function
+let notificationFunc = function(mobile, email) {
+  let url = "https://www.aniruddha.net/parallax/sms.php?mobile=91" + mobile;
+  axios.get(url).then(function(ans) {
+    if (ans.status == 200) {
+      console.log("Message sent successfully");
+    }
+  });
+  url = "https://ih.ruddha.xyz/mail?to=" + email;
+  axios.get(url).then(function(ans) {
+    if (ans == 200) {
+      console.log("Email sent successfully");
+    }
+  });
+};
+
 //Dashboard Data API
 app.get("/datapoint", auth, async function(req, res) {
   let nodeid = req.query.nodeid.substring(0, 4);
@@ -151,11 +170,20 @@ app.get("/datapoint", auth, async function(req, res) {
   let result = await collection
     .find({})
     .sort({ _id: -1 })
-    .limit(1)
+    .limit(2)
     .toArray();
   let data = {
     value: result[0].pulse
   };
+  console.log(data);
+  collection = client.db("intelliHealth").collection("doctors");
+  let resp = await collection.find({ nodeid: nodeid }).toArray();
+  if (
+    (Math.abs(result[0].pulse - result[1].pulse) / result[1].pulse) * 100 >=
+    resp[0].notif
+  ) {
+    notificationFunc(resp[0].mobilefam, resp[0].emailfam);
+  }
   res.send(data);
 });
 
