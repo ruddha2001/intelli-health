@@ -9,6 +9,7 @@ const MongoClient = require("mongodb").MongoClient;
 const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const rateLimit = require("express-rate-limit");
+const nodemailer = require("nodemailer");
 
 const app = express();
 
@@ -37,6 +38,16 @@ client.connect(function(err) {
   console.log("Connected successfully to MongoDB Atlas");
 });
 
+let transporter = nodemailer.createTransport({
+  host: "smtp.hostinger.in",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTPUSER,
+    pass: process.env.SMTPPASSWORD
+  }
+});
+
 app.use(cors());
 app.use(bodyParser.text());
 app.use(bodyParser.json());
@@ -55,13 +66,52 @@ let auth = async function(req, res, next) {
   }
 };
 
-app.post("/incoming", function(req, res) {
-  console.log(req.body);
-  res.sendStatus(200);
+//Mailing API
+app.post("/mail", async function(req, res) {
+  try {
+    let info = await transporter.sendMail({
+      from: "IntelliHealth <me@aniruddha.net>", // sender address
+      to: req.body.to, // list of receivers
+      subject: req.body.sub, // Subject line
+      text: req.body.text, // plain text body
+      html: req.body.html // html body
+    });
+    res.sendStatus(200);
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 });
 
-app.get("/", auth, function(req, res) {
-  res.send("Welcome to IntelliHealth");
+//Incoming API
+app.post("/incoming", function(req, res) {
+  try {
+    let date_ob = new Date();
+    let date = date_ob.getDate();
+    let month = date_ob.getMonth() + 1;
+    let year = date_ob.getFullYear();
+    let fullDate = date + "-" + month + "-" + year;
+    let hours = date_ob.getHours();
+    let minutes = date_ob.getMinutes();
+    let seconds = date_ob.getSeconds();
+    let fullTime = hours + ":" + minutes + ":" + seconds;
+    let data = req.body;
+    let id = data.substring(0, 4);
+    let value = data.substring(5);
+    let collectinName = "patientData" + id;
+    let collection = client.db("intelliHealth").collection(collectinName);
+    let response = collection.insertOne({
+      date: fullDate,
+      time: fullTime,
+      pulse: value
+    });
+    res.sendStatus(200);
+  } catch (err) {
+    if (err) {
+      console.log(err);
+      res.sendStatus(500);
+    }
+  }
 });
 
 //Login API
@@ -69,7 +119,7 @@ app.post("/login", async function(req, res) {
   let email = req.body.email;
   let password = req.body.password;
 
-  let collection = client.db("patientPlus").collection("users");
+  let collection = client.db("intelliHealth").collection("users");
 
   try {
     let result = await collection.findOne({ email: email });
@@ -134,6 +184,11 @@ app.post("/register", async function(req, res) {
     console.log(err);
     return res.sendStatus(500);
   }
+});
+
+//Homepage
+app.get("/", auth, function(req, res) {
+  res.send("Welcome to IntelliHealth");
 });
 
 app.listen(6600, function(err) {
