@@ -144,9 +144,17 @@ app.post("/incoming", function(req, res) {
 });
 
 //Dashboard Data API
-app.get("/datapoint", auth, function(req, res) {
+app.get("/datapoint", auth, async function(req, res) {
+  let nodeid = req.query.nodeid.substring(0, 4);
+  let collect = "patientData" + nodeid;
+  let collection = client.db("intelliHealth").collection(collect);
+  let result = await collection
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray();
   let data = {
-    value: 100
+    value: result["pulse"]
   };
   res.send(data);
 });
