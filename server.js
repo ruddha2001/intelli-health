@@ -62,7 +62,7 @@ let auth = async function(req, res, next) {
     let status = await jwt.verify(req.session.token, process.env.SECRET);
     return next();
   } catch (err) {
-    return res.sendFile(path.join(__dirname + "/site/login.html"));
+    return res.sendFile(path.join(__dirname + "/site/index.html"));
   }
 };
 
@@ -137,7 +137,7 @@ app.post("/login", async function(req, res) {
         }
       );
       req.session.token = token;
-      res.redirect("/");
+      res.redirect("/dashboard");
     } else {
       return res.sendFile(path.join(__dirname + "/site/login.html"));
     }
@@ -160,9 +160,7 @@ app.post("/register", async function(req, res) {
       let response = await collection.find({ email: email }).toArray();
       if (response.length != 0) {
         console.log("Existing Email");
-        return res
-          .status(299)
-          .sendFile(path.join(__dirname + "/site/register.html"));
+        return res.sendFile(path.join(__dirname + "/register.html"));
       } else {
         try {
           let result = await collection.insertOne({
@@ -187,8 +185,13 @@ app.post("/register", async function(req, res) {
 });
 
 //Homepage
-app.get("/", auth, function(req, res) {
-  res.send("Welcome to IntelliHealth");
+app.get("/", function(req, res) {
+  res.sendFile("index.html");
+});
+
+//Dashboard
+app.get("/dashboard", auth, function(req, res) {
+  res.sendFile(path.join(__dirname + "/site/dashboard.html"));
 });
 
 app.listen(6600, function(err) {
