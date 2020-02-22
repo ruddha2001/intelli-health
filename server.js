@@ -154,7 +154,7 @@ app.get("/datapoint", auth, async function(req, res) {
     .limit(1)
     .toArray();
   let data = {
-    value: result["pulse"]
+    value: result[0].pulse
   };
   res.send(data);
 });
