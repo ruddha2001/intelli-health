@@ -10,6 +10,7 @@ const jwt = require("jsonwebtoken");
 const session = require("express-session");
 const rateLimit = require("express-rate-limit");
 const nodemailer = require("nodemailer");
+const axios = require("axios").default;
 
 const app = express();
 
@@ -77,9 +78,11 @@ app.post("/mail", async function(req, res) {
     let info = await transporter.sendMail({
       from: "IntelliHealth <me@aniruddha.net>", // sender address
       to: req.body.to, // list of receivers
-      subject: req.body.sub, // Subject line
-      text: req.body.text, // plain text body
-      html: req.body.html // html body
+      subject: "IntelliHealth", // Subject line
+      text:
+        "There is some complications with the vitals of your family member. Please log into https://ih.ruddha.xyz to check on the reports. If in any grave danger, call 108 immediately for an ambulance.", // plain text body
+      html:
+        "There is some complications with the vitals of your family member. Please log into <a href='https://ih.ruddha.xyz'>https://ih.ruddha.xyz</a> to check on the reports. If in any grave danger, call <b>108</b> immediately for an ambulance." // html body
     });
     res.sendStatus(200);
   } catch (err) {
@@ -151,11 +154,37 @@ app.get("/datapoint", auth, async function(req, res) {
   let result = await collection
     .find({})
     .sort({ _id: -1 })
-    .limit(1)
+    .limit(2)
     .toArray();
   let data = {
     value: result[0].pulse
   };
+  collection = client.db("intelliHealth").collection("doctors");
+  let resp = await collection.find({ nodeid: nodeid }).toArray();
+  if (
+    (Math.abs(result[0].pulse - result[1].pulse) / result[1].pulse) * 100 >=
+    resp[0].notif
+  ) {
+    //Reporting to the user
+    let url =
+      "https://www.aniruddha.net/parallax/sms.php?mobile=91" +
+      resp[0].mobilefam;
+    try {
+      let ans = await axios.get(url);
+      if (ans.status == 200) {
+        console.log("Message sent successfully");
+      }
+
+      let status = await axios.post("https://ih.ruddha.xyz/mail", {
+        to: resp[0].emailfam
+      });
+      if (status == 200) {
+        console.log("Email sent successfully");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
   res.send(data);
 });
 
