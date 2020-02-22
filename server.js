@@ -88,6 +88,30 @@ app.post("/mail", async function(req, res) {
   }
 });
 
+//Doctor Control API
+app.post("/doctorcontrol", async function(req, res) {
+  let docid = req.body.docid;
+  let password = req.body.password;
+
+  let collection = client.db("intelliHealth").collection("doctors");
+  try {
+    let result = await collection.findOne({ docid: docid });
+    let status = await bcrypt.compare(password, result["password"]);
+    if (status) {
+      let response = await collection.updateOne(
+        { nodeid: req.body.nodeid },
+        { $set: { notif: req.body.notif } }
+      );
+      res.sendFile(path.join(__dirname + "/site/success.html"));
+    } else {
+      return res.sendFile(path.join(__dirname + "/site/fail.html"));
+    }
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+});
+
 //Incoming API
 app.post("/incoming", function(req, res) {
   try {
@@ -121,7 +145,10 @@ app.post("/incoming", function(req, res) {
 
 //Dashboard Data API
 app.get("/datapoint", auth, function(req, res) {
-  res.send(req.query.nodeid);
+  let data = {
+    value: 100
+  };
+  res.send(data);
 });
 
 //Login API

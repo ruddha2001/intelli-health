@@ -11,8 +11,8 @@
       integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
       crossorigin="anonymous"
     />
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
       integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
@@ -35,21 +35,18 @@
       <div class="container-fuid" style="display: block;">
         <div class="row">
           <div class="col-lg-6" style="margin-top: 80px;">
-            <img
-              src="3.webp"
-              class="d-block mx-auto"
-              width="90%"
-              alt="Logo"
-            />
+            <img src="3.webp" class="d-block mx-auto" width="90%" alt="Logo" />
           </div>
           <div class="col-lg-6" style="margin-top: 40px;">
             <div class="card col-lg-8 d-block mx-auto">
               <br />
-              <h1 class="display-5" style="text-align: center;">Authorised Sign-In</h1>
+              <h1 class="display-5" style="text-align: center;">
+                Authorised Sign-In
+              </h1>
               <br />
               <div class="card-body px-lg-5 pt-0">
                 <!-- Form -->
-                <form action="http://localhost:6600/register" method="POST">
+                <form action="/doctorcontrol  " method="POST">
                   <div class="form-group">
                     <label
                       for="exampleInputEmail1"
@@ -63,7 +60,7 @@
                       id="email"
                       aria-describedby="emailHelp"
                       placeholder="Enter Authorised ID"
-                      name="name"
+                      name="docid"
                     />
                     <small
                       id="emailHelp"
@@ -81,12 +78,12 @@
                       >Login Key</label
                     >
                     <input
-                      type="email"
+                      type="password"
                       class="form-control"
                       id="email"
                       aria-describedby="emailHelp"
                       placeholder="Enter Authorised Login Key"
-                      name="email"
+                      name="password"
                     />
                     <small
                       id="emailHelp"
@@ -104,7 +101,7 @@
                       >Node ID</label
                     >
                     <input
-                      type="password"
+                      type="text"
                       class="form-control"
                       id="password"
                       placeholder="Enter Patient ID"
@@ -126,11 +123,11 @@
                       >Notification Percent</label
                     >
                     <input
-                      type="password"
+                      type="text"
                       class="form-control"
                       id="password"
                       placeholder="Enter Percentage Values"
-                      name="password"
+                      name="notif"
                     />
                     <small
                       id="passwordHelp"
