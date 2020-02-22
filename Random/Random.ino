@@ -43,7 +43,7 @@ void loop()
   lastb = b;
   lasta = a;
 
-  BPM = random(70, 80);
+  BPM = random(60, 120);
   tone(8, 1000, 250);
 
   oled.writeFillRect(0, 50, 128, 16, BLACK);
