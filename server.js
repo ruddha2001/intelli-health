@@ -147,20 +147,20 @@ app.post("/incoming", function(req, res) {
 });
 
 //Notification Function
-let notificationFunc = function(mobile, email) {
-  let url = "https://www.aniruddha.net/parallax/sms.php?mobile=91" + mobile;
-  axios.get(url).then(function(ans) {
-    if (ans.status == 200) {
-      console.log("Message sent successfully");
-    }
-  });
-  url = "https://ih.ruddha.xyz/mail?to=" + email;
-  axios.get(url).then(function(ans) {
-    if (ans == 200) {
-      console.log("Email sent successfully");
-    }
-  });
-};
+// let notificationFunc = function(mobile, email) {
+//   let url = "https://www.aniruddha.net/parallax/sms.php?mobile=91" + mobile;
+//   axios.get(url).then(function(ans) {
+//     if (ans.status == 200) {
+//       console.log("Message sent successfully");
+//     }
+//   });
+//   url = "https://ih.ruddha.xyz/mail?to=" + email;
+//   axios.get(url).then(function(ans) {
+//     if (ans == 200) {
+//       console.log("Email sent successfully");
+//     }
+//   });
+// };
 
 //Dashboard Data API
 app.get("/datapoint", auth, async function(req, res) {
@@ -182,7 +182,7 @@ app.get("/datapoint", auth, async function(req, res) {
     (Math.abs(result[0].pulse - result[1].pulse) / result[1].pulse) * 100 >=
     resp[0].notif
   ) {
-    notificationFunc(resp[0].mobilefam, resp[0].emailfam);
+    //notificationFunc(resp[0].mobilefam, resp[0].emailfam);
   }
   res.send(data);
 });
