@@ -60,6 +60,7 @@ app.use(express.static(__dirname + "/site"));
 let auth = async function(req, res, next) {
   try {
     let status = await jwt.verify(req.session.token, process.env.SECRET);
+    res.body.nodeid = 1234;
     return next();
   } catch (err) {
     return res.sendFile(path.join(__dirname + "/site/index.html"));
@@ -112,6 +113,11 @@ app.post("/incoming", function(req, res) {
       res.sendStatus(500);
     }
   }
+});
+
+//Dashboard Data API
+app.get("/datapoint", auth, function(req, res) {
+  res.send(req.query.nodeid);
 });
 
 //Login API
@@ -191,7 +197,7 @@ app.get("/", function(req, res) {
 
 //Dashboard
 app.get("/dashboard", auth, function(req, res) {
-  res.sendFile(path.join(__dirname + "/site/dashboard.html"));
+  res.sendFile(path.join(__dirname + "/site/dashboard.ejs"));
 });
 
 app.listen(6600, function(err) {
