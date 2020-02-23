@@ -200,7 +200,8 @@ app.get("/datapoint", auth, async function(req, res) {
     (Math.abs(result[0].pulse - result[1].pulse) / result[1].pulse) * 100 >=
     resp[0].notif
   ) {
-    if (counter == 10) {
+    console.log(counter);
+    if (counter == 100) {
       notificationFunc(resp[0].mobilefam, resp[0].emailfam);
       problemLog();
       counter = 0;
