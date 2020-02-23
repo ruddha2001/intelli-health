@@ -201,7 +201,7 @@ app.get("/datapoint", auth, async function(req, res) {
     resp[0].notif
   ) {
     if (counter == 10) {
-      //notificationFunc(resp[0].mobilefam, resp[0].emailfam);
+      notificationFunc(resp[0].mobilefam, resp[0].emailfam);
       problemLog();
       counter = 0;
     } else {
@@ -303,6 +303,11 @@ app.get("/dashboard", auth, async function(req, res) {
     user: res.locals.username,
     pulseprob: str
   });
+});
+
+//Records
+app.get("/records", auth, function(req, res) {
+  res.sendFile("records.html");
 });
 
 app.listen(6600, function(err) {
