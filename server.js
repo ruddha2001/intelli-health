@@ -12,6 +12,8 @@ const rateLimit = require("express-rate-limit");
 const nodemailer = require("nodemailer");
 const axios = require("axios").default;
 
+let counter = 0;
+
 const app = express();
 
 const apiLimiter = rateLimit({
@@ -162,6 +164,23 @@ let notificationFunc = function(mobile, email) {
   });
 };
 
+//Problem Logging Function
+let problemLog = function() {
+  let date_ob = new Date();
+  let date = date_ob.getDate();
+  let month = date_ob.getMonth() + 1;
+  let year = date_ob.getFullYear();
+  let fullDate = date + "-" + month + "-" + year;
+  let hours = date_ob.getHours();
+  let minutes = date_ob.getMinutes();
+  let seconds = date_ob.getSeconds();
+  let fullTime = hours + ":" + minutes + ":" + seconds;
+  let collection = client.db("intelliHealth").collection("problem");
+  collection.insertOne({ date: fullDate, time: fullTime }, function(err, res) {
+    if (err) console.log(err);
+  });
+};
+
 //Dashboard Data API
 app.get("/datapoint", auth, async function(req, res) {
   let nodeid = req.query.nodeid.substring(0, 4);
@@ -175,14 +194,19 @@ app.get("/datapoint", auth, async function(req, res) {
   let data = {
     value: result[0].pulse
   };
-  console.log(data);
   collection = client.db("intelliHealth").collection("doctors");
   let resp = await collection.find({ nodeid: nodeid }).toArray();
   if (
     (Math.abs(result[0].pulse - result[1].pulse) / result[1].pulse) * 100 >=
     resp[0].notif
   ) {
-    notificationFunc(resp[0].mobilefam, resp[0].emailfam);
+    if (counter == 10) {
+      //notificationFunc(resp[0].mobilefam, resp[0].emailfam);
+      problemLog();
+      counter = 0;
+    } else {
+      counter++;
+    }
   }
   res.send(data);
 });
@@ -266,10 +290,18 @@ app.get("/", function(req, res) {
 });
 
 //Dashboard
-app.get("/dashboard", auth, function(req, res) {
+app.get("/dashboard", auth, async function(req, res) {
+  let collection = client.db("intelliHealth").collection("problem");
+  let result = await collection
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray();
+  let str = result[0].date + " " + result[0].time;
   res.render("dashboard.ejs", {
     nodeid: res.locals.nodeid,
-    user: res.locals.username
+    user: res.locals.username,
+    pulseprob: str
   });
 });
 
